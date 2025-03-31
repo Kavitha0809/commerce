@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html"%}
+
+{% block body %}
+<ul>
+{% for list in watchlist %}
+<h2>{{list.title}}</h2>
+
+<p>{{list.description}}</p>
+<p><strong>Price: </strong>${{list.price}}</p>
+<p><strong>Category:</strong> {{list.category.name}}</p>
+<img src = "{{list.image_url}}" alt="listing Image" width="200">
+
+
+{% empty %}
+    <li>No items in your watchlist yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}

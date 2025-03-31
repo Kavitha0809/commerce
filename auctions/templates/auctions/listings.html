@@ -1,0 +1,72 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body%}
+<h2>{{Auction.title}}</h2>
+<p>{{Auction.description}}</p>
+<p><strong>Price: </strong>${{Auction.price}}</p>
+{% if Auction.category %}
+    <p><strong>Category:</strong> <a href="{% url 'category' Auction.category.name %}">{{ Auction.category.name }}</a></p>
+{% else %}
+    <p><strong>Category:</strong> Not specified</p>
+{% endif %}
+<img src = "{{Auction.image_url}}" alt="listing Image" width="200">
+
+
+<h2>Comments</h2>
+
+{% if request.user.is_authenticated %}
+<form action="{% url 'list' Auction.id%}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <input autofocus class="form-control" type="text" name="content" placeholder="Comment">
+    </div>
+
+    <input class="btn btn-primary" type="submit" value="comment">
+</form>
+{% else %}
+<p><a href="{%url 'login'%}">Login</a>to leave a comment</p>
+{% endif %}
+
+
+<ul>
+    {% for comment in Comments%}
+    <li><strong>{{comment.user}}:</strong>{{comment.content}} ({{comment.created_at}})</li>
+    {% empty %}
+    <li>No comment amount yet.Be the first</li>
+    {% endfor %}
+</ul>
+
+<h2>Bids</h2>
+{%if request.user.is_authenticated%}
+<form action="{% url 'list' Auction.id %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <input autofocus class="form-control" type="number" name="bid_amount" placeholder="Bid">
+    </div>
+    <input class="btn btn-primary" type="submit" value="Bid">
+</form>
+{% else %}
+<p><a href="{%url 'login'%}">Login</a>to bid</p>
+{% endif %}
+
+
+<ul>
+    {% for bid in bids%}
+    <li><strong>{{bid.user}}</strong>{{bid.bid_amount}} {{bid.bid_time}}
+     {% empty %}
+     <li>no bids yet</li>
+     {% endfor %}
+ 
+ </ul>
+
+ 
+ <a href="{%url 'toggle_watchlist' Auction.id%}">
+    {% if request.user.is_authenticated and  request.user in Auction.watchlisted_by.all %}
+     <button >Remove from watchlist</button>
+    
+    {% else %}
+    <button>Add to watchlist</button>
+    {% endif %}
+    </a>
+   
+{% endblock %}
